@@ -6,6 +6,7 @@ string _yelpDataPath = Path.Combine(Environment.CurrentDirectory, "Data", "yelp_
 MLContext _mlContext = new MLContext();
 TrainTestData splitDataView = LoadData(_mlContext);
 ITransformer model = BuildAndTrainModel(_mlContext, splitDataView.TrainSet);
+GetPredictionForReviewContent(_mlContext, model, "This is an amazing product!");
 
 TrainTestData LoadData(MLContext mlContext)
 {
@@ -23,3 +24,12 @@ ITransformer BuildAndTrainModel(MLContext mlContext,IDataView splitTrainSet)
     return model;
 }
 
+void GetPredictionForReviewContent(MLContext mlContext, ITransformer model, string reviewContent)
+{
+    var predictionEngine = mlContext.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
+    var sampleReview = new SentimentData { SentimentText = reviewContent };
+    var prediction = predictionEngine.Predict(sampleReview);
+    Console.WriteLine($"Review: {sampleReview.SentimentText}");
+    Console.WriteLine($"Predicted sentiment: {(prediction.Prediction ? "Positive" : "Negative")}");
+    Console.WriteLine($"Probability: {prediction.Probability}");
+}
