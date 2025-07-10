@@ -8,6 +8,20 @@ TrainTestData splitDataView = LoadData(_mlContext);
 ITransformer model = BuildAndTrainModel(_mlContext, splitDataView.TrainSet);
 GetPredictionForReviewContent(_mlContext, model, "This is an amazing product!");
 
+var keepRunning = true;
+while (keepRunning)
+{
+    Console.WriteLine("Enter a review to predict sentiment (or type 'exit' to quit):");
+    var input = Console.ReadLine();
+    if (input?.ToLower() == "exit")
+    {
+        keepRunning = false;
+    }
+    else if (!string.IsNullOrWhiteSpace(input))
+    {
+        GetPredictionForReviewContent(_mlContext, model, input);
+    }
+}
 TrainTestData LoadData(MLContext mlContext)
 {
     IDataView dataView = mlContext.Data.LoadFromTextFile<SentimentData>(_yelpDataPath);
